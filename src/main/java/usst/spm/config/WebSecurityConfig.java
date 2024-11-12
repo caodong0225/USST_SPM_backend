@@ -1,5 +1,6 @@
 package usst.spm.config;
 
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,8 +10,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import usst.spm.exception.MyAccessDeniedHandler;
+import usst.spm.exception.MyAuthenticationEntryPoint;
 import usst.spm.filter.UserAuthFilter;
 
 /**
@@ -26,6 +30,10 @@ public class WebSecurityConfig {
     public WebSecurityConfig(UserAuthFilter userAuthFilter) {
         this.userAuthFilter = userAuthFilter;
     }
+    @Resource
+    private MyAuthenticationEntryPoint myAuthenticationEntryPoint;
+    @Resource
+    private MyAccessDeniedHandler myAccessDeniedHandler;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http    // 禁用CSRF保护
@@ -34,12 +42,17 @@ public class WebSecurityConfig {
                 .requestCache(RequestCacheConfigurer::disable)
                 //.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth ->
-                        auth.anyRequest().access((authentication, object) -> new AuthorizationDecision(true))
+                        auth.anyRequest().access((authentication, object) -> {
+                                    if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() == "anonymousUser") {
+                                        return new AuthorizationDecision(false);
+                                    }
+                                    return new AuthorizationDecision(true);
+                                })
                 );
 
         http.addFilterBefore(userAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        // http.exceptionHandling(exception -> exception.authenticationEntryPoint(myAuthenticationEntryPoint).accessDeniedHandler(myAccessDeniedHandler));
+        http.exceptionHandling(exception -> exception.authenticationEntryPoint(myAuthenticationEntryPoint).accessDeniedHandler(myAccessDeniedHandler));
 
         return http.build();
     }
