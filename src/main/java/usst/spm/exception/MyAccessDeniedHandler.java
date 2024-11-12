@@ -16,6 +16,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
+import static usst.spm.constant.MessageConstant.UNAUTHORIZED;
+
 /**
  * @author jyzxc
  * @since 2024-07-30
@@ -31,7 +33,7 @@ public class MyAccessDeniedHandler implements AccessDeniedHandler {
         HashMap<String, Object> result = new HashMap<>();
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         result.put("code", 400);
-        result.put("message", "未授权");
+        result.put("message", UNAUTHORIZED);
         String json = JSON.toJSONString(result);
         response.setContentType("application/json;charset=utf-8");
         response.getWriter().write(json);

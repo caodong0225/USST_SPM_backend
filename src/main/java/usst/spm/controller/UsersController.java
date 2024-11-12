@@ -15,6 +15,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Range;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -67,7 +69,7 @@ public class UsersController {
     })
     @ApiResponse(responseCode = "200", description = "成功")
     @ApiResponse(responseCode = "400", description = "参数错误", content = @Content(schema = @Schema(implementation = BaseResponse.class)))
-    public GeneralDataResponse<IPage<UsersVO>> getUsers(
+    public ResponseEntity<GeneralDataResponse<IPage<UsersVO>>> getUsers(
             @RequestParam(defaultValue = "1") @Min(value = 1, message = "当前页最小为1") int current,
             @RequestParam(defaultValue = "10") @Range(min = 1, max = 100, message = "size范围必须在1~100之间") int size,
             @RequestParam(defaultValue = "id") @Pattern(
@@ -91,13 +93,13 @@ public class UsersController {
         }
         // 分页查询
         IPage<UsersVO> usersPage = usersService.selectUsersWithRoles(new Page<>(current, size), queryWrapper);
-        return new GeneralDataResponse<>(usersPage);
+        return ResponseEntity.ok(new GeneralDataResponse<>(usersPage));
     }
 
     @Operation(summary = "获取用户信息", description = "获取当前登录用户的信息")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "成功"),
-            @ApiResponse(responseCode = "403", description = "未登录")})
+            @ApiResponse(responseCode = "403", description = "未登录", content = @Content(schema = @Schema(implementation = BaseResponse.class)))})
     @GetMapping("/me")
     public GeneralDataResponse<UserInfo> getUserInfo() {
         UserLogin user = (UserLogin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -109,26 +111,27 @@ public class UsersController {
             @Parameter(name = "id", description = "用户的id值，必须大于等于0，为必填项")
     })
     @Operation(summary = "获取用户信息", description = "根据用户ID获取用户信息，无需登录，返回用户信息")
-    @ApiResponse(responseCode = "400", description = "参数错误")
+    @ApiResponse(responseCode = "404", description = "用户未找到")
     @ApiResponse(responseCode = "200", description = "成功")
-    public GeneralDataResponse<UserInfo> getUserInfoById(
+    public ResponseEntity<GeneralDataResponse<UserInfo>> getUserInfoById(
             @Min(value = 0, message = "用户id必须大于0") @PathVariable Long id
     ) {
         UserInfo userInfo = usersService.getUserInfo(id);
         if (userInfo == null) {
-            return new GeneralDataResponse<>(400, "User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new GeneralDataResponse<>(404, "User not found"));
         }
         if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() != "anonymousUser") {
             UserLogin user = (UserLogin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if (user.isAdmin() || user.getUserId().equals(id))// 只有管理员或者是自己才能看到完整信息
-            {
-                return new GeneralDataResponse<>(userInfo);
+            // 只有管理员或者是自己才能看到完整信息
+            if (user.isAdmin() || user.getUserId().equals(id)) {
+                return ResponseEntity.ok(new GeneralDataResponse<>(userInfo));
             }
         }
         // TODO: 脱敏处理，过滤掉敏感信息，
         Map<String, Object> userExtraInfo = userInfo.getUserExtraInfo();
         userInfo.setUserExtraInfo(userExtraInfo);
-        return new GeneralDataResponse<>(userInfo);
+        return ResponseEntity.ok(new GeneralDataResponse<>(userInfo));
     }
 
 }

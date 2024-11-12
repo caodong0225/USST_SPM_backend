@@ -101,7 +101,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex) {
         return new ResponseEntity<>(
                 new BaseResponse(400, ex.getMessage()),
-                HttpStatus.OK
+                HttpStatus.BAD_REQUEST
         );
     }
 

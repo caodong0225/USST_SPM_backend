@@ -12,6 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
+import static usst.spm.constant.MessageConstant.PERMISSION_DENIED;
+
 /**
  * @author jyzxc
  * @since 2024-07-29
@@ -29,7 +31,7 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint{
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         // 设置响应体
         result.put("code", 403);
-        result.put("message", "permission denied");
+        result.put("message", PERMISSION_DENIED);
         String json = JSON.toJSONString(result);
         response.setContentType("application/json;charset=utf-8");
         response.getWriter().write(json);
