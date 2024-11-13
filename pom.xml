@@ -3,10 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>caodong0225</groupId>
-    <artifactId>flappybird_backend</artifactId>
+    <artifactId>spm_backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>flappybird_backend</name>
-    <description>flappybird_backend</description>
+    <name>spm_backend</name>
+    <description>spm_backend</description>
     <properties>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
