@@ -42,7 +42,8 @@ public class WebSecurityConfig {
                 .requestCache(RequestCacheConfigurer::disable)
                 //.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/doc.html","/webjars/**","/v3/api-docs/**").permitAll()
+                        // "/doc.html","/webjars/**","/v3/api-docs/**"
+                        auth.requestMatchers("/**").permitAll()
                                 .anyRequest().access((authentication, object) -> {
                                     if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() == "anonymousUser") {
                                         return new AuthorizationDecision(false);

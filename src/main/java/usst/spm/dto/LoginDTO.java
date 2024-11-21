@@ -10,6 +10,10 @@ import lombok.Setter;
 import java.io.Serial;
 import java.io.Serializable;
 
+/**
+ * @author jyzxc
+ * @since 2024-11-21
+ */
 @Getter
 @Setter
 @Schema(description = "登录的post请求体")
@@ -29,4 +33,11 @@ public class LoginDTO implements Serializable {
     @Schema(name = "password", description = "密码,长度必须在6-32之间,必须包含大小写字母、数字或特殊字符其中至少两种", example = "Admin123")
     private String password;
 
+    @Override
+    public String toString() {
+        return "LoginDTO{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }

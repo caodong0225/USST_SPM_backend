@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import usst.spm.annotation.AntiBrutePasswordExporter;
 import usst.spm.dto.LoginDTO;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 @Tag(name = "用户认证接口，包括登录、注册、注销等")
+@Validated
 public class AuthController {
     private final IUsersService usersService;
     private final RedisService redisService;
