@@ -16,7 +16,7 @@ import java.util.List;
  * @since 2024-11-12
  */
 public interface IUsersService extends IService<Users> {
-    Users login(String usernameOrEmail, String password);
+    Users login(String username, String password);
     Users getUserCached(Serializable userId);
     List<String> getRolesByUserId(Serializable userId);
     Boolean hasRole(Serializable userId, String role);

@@ -106,13 +106,13 @@ public class UsersController {
         return new GeneralDataResponse<>(usersService.getUserInfo(user.getUserId()));
     }
 
-    @GetMapping("/get/{id}")
     @Parameters(value = {
             @Parameter(name = "id", description = "用户的id值，必须大于等于0，为必填项")
     })
     @Operation(summary = "获取用户信息", description = "根据用户ID获取用户信息，无需登录，返回用户信息")
     @ApiResponse(responseCode = "404", description = "用户未找到")
     @ApiResponse(responseCode = "200", description = "成功")
+    @GetMapping("/get/{id}")
     public ResponseEntity<GeneralDataResponse<UserInfo>> getUserInfoById(
             @Min(value = 0, message = "用户id必须大于0") @PathVariable Long id
     ) {
