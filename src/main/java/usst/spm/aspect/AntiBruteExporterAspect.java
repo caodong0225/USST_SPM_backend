@@ -9,7 +9,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import usst.spm.annotation.AntiBrutePasswordExporter;
-import usst.spm.dto.LoginDataResponseDTO;
+import usst.spm.vo.LoginDataResponseVO;
 import usst.spm.result.GeneralDataResponse;
 import usst.spm.service.RedisService;
 
@@ -43,7 +43,8 @@ public class AntiBruteExporterAspect {
         String key = "app:login:" + loginIp;
 
         // 在目标方法执行之前进行检查
-        if (session.getAttribute("userSession") == null) {  // 如果用户尚未登录
+        // 如果用户尚未登录
+        if (session.getAttribute("userSession") == null) {
             if (redisService.hasKey(key)) {
                 int times = Integer.parseInt(redisService.getValue(key).toString());
                 if (times > maxTry) {
@@ -56,8 +57,9 @@ public class AntiBruteExporterAspect {
         Object result = joinPoint.proceed();
 
         // 如果登录成功，清除失败次数
-        if (session.getAttribute("userSession") == null) {  // 如果用户尚未登录
-            if (result instanceof LoginDataResponseDTO) {
+        // 如果用户尚未登录
+        if (session.getAttribute("userSession") == null) {
+            if (result instanceof LoginDataResponseVO) {
                 redisService.setValue(key, "0", 1);
             } else {
                 if (redisService.hasKey(key)) {
