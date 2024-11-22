@@ -15,6 +15,11 @@ spring:
   main:
     allow-bean-definition-overriding: true
 # 在生产环境中，需要禁用swagger
+rocketmq:
+  namesrv-addr: 127.0.0.1:9876 # NameServer 地址
+  producer-group: test-producer-group # 生产者组
+  consumer-group: test-consumer-group # 消费者组
+  topic: test-topic # 消息的主题
 springdoc:
   api-docs:
     enabled: true
