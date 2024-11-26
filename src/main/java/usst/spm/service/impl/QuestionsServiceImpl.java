@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import usst.spm.entity.Questions;
 import usst.spm.mapper.QuestionsMapper;
-import usst.spm.service.QuestionsService;
+import usst.spm.service.IQuestionsService;
 
 /**
 * @author jyzxc
@@ -13,7 +13,7 @@ import usst.spm.service.QuestionsService;
 */
 @Service
 public class QuestionsServiceImpl extends ServiceImpl<QuestionsMapper, Questions>
-    implements QuestionsService {
+    implements IQuestionsService {
 
 }
 

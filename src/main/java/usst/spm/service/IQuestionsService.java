@@ -8,6 +8,6 @@ import usst.spm.entity.Questions;
 * @description 针对表【questions(问题列表)】的数据库操作Service
 * @createDate 2024-11-25 23:31:40
 */
-public interface QuestionsService extends IService<Questions> {
+public interface IQuestionsService extends IService<Questions> {
 
 }
