@@ -14,6 +14,11 @@ spring:
       database: 3
   main:
     allow-bean-definition-overriding: true
+minio:
+  endpoint: http://localhost:9000           # 替换为您的 MinIO 服务地址
+  access-key: 2IapYfTR6v67wch7DsBK               # 替换为您的 MinIO Access Key
+  secret-key: 1EMUw3wEsDfPSoXQGWXEjupsKwb89ByIdfCdkVMn               # 替换为您的 MinIO Secret Key
+  bucket-name: spm              # 替换为您想使用的 Bucket 名称
 security:
   paths:
     publicRoutes:
