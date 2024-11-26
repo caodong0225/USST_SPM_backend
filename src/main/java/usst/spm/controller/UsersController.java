@@ -22,6 +22,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import usst.spm.annotation.MyAllowedExtKey;
+import usst.spm.dto.UpdateExtraRequestDTO;
 import usst.spm.dto.UpdateRoleRequestDTO;
 import usst.spm.entity.UserInfo;
 import usst.spm.entity.UserLogin;
@@ -138,7 +140,7 @@ public class UsersController {
     }
 
     @PutMapping("/change/{id}/role")
-    @Operation(summary = "修改用户角色", description = "修改用户角色，只有超级管理员可以修改，不能修改自己的角色信息，可选值有admin")
+    @Operation(summary = "修改用户角色", description = "修改用户角色，只有超级管理员可以修改，不能修改自己的角色信息，可选值有teacher")
     @Parameter(name = "id", description = "用户的id值，必须大于等于0，为必填项")
     @ApiResponse(responseCode = "200", description = "成功")
     @ApiResponse(responseCode = "400", description = "参数错误，角色不允许")
@@ -164,4 +166,77 @@ public class UsersController {
         }
     }
 
+    @PutMapping("/change/{id}/ext/{key}")
+    @Operation(summary = "修改用户拓展信息", description = "修改用户拓展信息，只有超级管理员可以修改，不能修改自己的拓展信息")
+    @Parameter(name = "id", description = "用户的id值，必须大于等于0，为必填项")
+    @Parameter(name = "key", description = "拓展信息的key值，必须是合法的key值")
+    @ApiResponse(responseCode = "200", description = "成功")
+    @ApiResponse(responseCode = "400", description = "参数错误")
+    @ApiResponse(responseCode = "500", description = "失败")
+    @PreAuthorize("@UsersExpression.isUserExist(#id) AND @AuthExpression.isSuperAdmin()")
+    public BaseResponse updateUserExt(
+            @PathVariable Integer id,
+            @PathVariable @MyAllowedExtKey String key,
+            @RequestBody UpdateExtraRequestDTO value
+    ) {
+        try {
+            usersService.updateUserExt(id, key, value.getValue());
+            return BaseResponse.makeResponse(200);
+        } catch (Exception e) {
+            return BaseResponse.makeResponse(500, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/change/{id}/ext/{key}")
+    @Operation(summary = "删除用户拓展信息", description = "删除用户拓展信息，只有超级管理员可以删除，不能删除自己的拓展信息")
+    @Parameter(name = "id", description = "用户的id值，必须大于等于0，为必填项")
+    @Parameter(name = "key", description = "拓展信息的key值，必须是合法的key值")
+    @ApiResponse(responseCode = "200", description = "成功")
+    @ApiResponse(responseCode = "400", description = "参数错误")
+    @ApiResponse(responseCode = "500", description = "失败")
+    @PreAuthorize("@UsersExpression.isUserExist(#id) AND @AuthExpression.isSuperAdmin()")
+    public BaseResponse deleteUserExt(
+            @PathVariable Integer id,
+            @PathVariable @MyAllowedExtKey String key
+    ) {
+        try {
+            usersService.removeUserExt(id, key);
+            return BaseResponse.makeResponse(200);
+        } catch (Exception e) {
+            return BaseResponse.makeResponse(500, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/change/{id}/role")
+    @Operation(summary = "删除用户角色", description = "删除用户角色，只有超级管理员可以删除，不能删除自己的角色信息")
+    @Parameter(name = "id", description = "用户的id值，必须大于等于0，为必填项")
+    @ApiResponse(responseCode = "200", description = "成功")
+    @ApiResponse(responseCode = "400", description = "参数错误")
+    @ApiResponse(responseCode = "500", description = "失败")
+    @PreAuthorize("@UsersExpression.isUserExist(#id) AND @UsersExpression.isUserSame(#id) AND @AuthExpression.isSuperAdmin()")
+    public BaseResponse deleteUserRole(@PathVariable Integer id) {
+        try {
+            usersService.removeUserRoles(id);
+            return BaseResponse.makeResponse(200);
+        } catch (Exception e) {
+            return BaseResponse.makeResponse(500, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/change/{id}")
+    @Operation(summary = "删除用户", description = "删除用户，只有超级管理员可以删除，不能删除自己")
+    @Parameter(name = "id", description = "用户的id值，必须大于等于0，为必填项")
+    @ApiResponse(responseCode = "200", description = "成功")
+    @ApiResponse(responseCode = "400", description = "参数错误")
+    @ApiResponse(responseCode = "500", description = "失败")
+    @PreAuthorize("@UsersExpression.isUserExist(#id) AND @UsersExpression.isUserSame(#id) AND @AuthExpression.isSuperAdmin()")
+    public BaseResponse deleteUser(@PathVariable Integer id) {
+        try {
+            usersService.removeUserById(id);
+            return BaseResponse.makeResponse(200);
+        } catch (Exception e) {
+            return BaseResponse.makeResponse(500, e.getMessage());
+        }
+    }
+    
 }
