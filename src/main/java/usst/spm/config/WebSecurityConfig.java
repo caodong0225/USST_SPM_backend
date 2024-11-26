@@ -25,36 +25,43 @@ import usst.spm.filter.UserAuthFilter;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig {
+
     private final UserAuthFilter userAuthFilter;
+    private final SecurityPathsConfig securityPathsConfig;
+
     @Autowired
-    public WebSecurityConfig(UserAuthFilter userAuthFilter) {
+    public WebSecurityConfig(UserAuthFilter userAuthFilter, SecurityPathsConfig securityPathsConfig) {
         this.userAuthFilter = userAuthFilter;
+        this.securityPathsConfig = securityPathsConfig;
     }
+
     @Resource
     private MyAuthenticationEntryPoint myAuthenticationEntryPoint;
     @Resource
     private MyAccessDeniedHandler myAccessDeniedHandler;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http    // 禁用CSRF保护
-                .csrf(AbstractHttpConfigurer::disable)
-                // 禁用请求缓存
+        http.csrf(AbstractHttpConfigurer::disable)
                 .requestCache(RequestCacheConfigurer::disable)
-                //.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-                .authorizeHttpRequests(auth ->
-                        // "/doc.html","/webjars/**","/v3/api-docs/**"
-                        auth.requestMatchers("/**").permitAll()
-                                .anyRequest().access((authentication, object) -> {
-                                    if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() == "anonymousUser") {
-                                        return new AuthorizationDecision(false);
-                                    }
-                                    return new AuthorizationDecision(true);
-                                })
-                );
+                .authorizeHttpRequests(auth -> {
+                    // 配置公共路径的权限
+                    securityPathsConfig.getPublicRoutes().forEach(path -> auth.requestMatchers(path).permitAll());
+                    // 配置需要认证的路径权限
+                    securityPathsConfig.getAuthenticated().forEach(path -> auth.requestMatchers(path).authenticated());
+                    // 其他路径默认需要认证
+                    auth.anyRequest().access((authentication, object) -> {
+                        if ("anonymousUser".equals(SecurityContextHolder.getContext().getAuthentication().getPrincipal())) {
+                            return new AuthorizationDecision(false);
+                        }
+                        return new AuthorizationDecision(true);
+                    });
+                });
 
         http.addFilterBefore(userAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-        http.exceptionHandling(exception -> exception.authenticationEntryPoint(myAuthenticationEntryPoint).accessDeniedHandler(myAccessDeniedHandler));
+        http.exceptionHandling(exception -> exception
+                .authenticationEntryPoint(myAuthenticationEntryPoint)
+                .accessDeniedHandler(myAccessDeniedHandler));
 
         return http.build();
     }

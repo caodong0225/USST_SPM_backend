@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import usst.spm.dto.UpdateRoleRequestDTO;
 import usst.spm.entity.UserInfo;
 import usst.spm.entity.UserLogin;
 import usst.spm.entity.Users;
@@ -29,6 +31,7 @@ import usst.spm.result.GeneralDataResponse;
 import usst.spm.service.IUsersService;
 import usst.spm.vo.UsersVO;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -132,6 +135,33 @@ public class UsersController {
         Map<String, Object> userExtraInfo = userInfo.getUserExtraInfo();
         userInfo.setUserExtraInfo(userExtraInfo);
         return ResponseEntity.ok(new GeneralDataResponse<>(userInfo));
+    }
+
+    @PutMapping("/change/{id}/role")
+    @Operation(summary = "修改用户角色", description = "修改用户角色，只有超级管理员可以修改，不能修改自己的角色信息，可选值有admin")
+    @Parameter(name = "id", description = "用户的id值，必须大于等于0，为必填项")
+    @ApiResponse(responseCode = "200", description = "成功")
+    @ApiResponse(responseCode = "400", description = "参数错误，角色不允许")
+    @PreAuthorize("@UsersExpression.isUserExist(#id) AND @UsersExpression.isUserSame(#id) AND @AuthExpression.isSuperAdmin()")
+    public BaseResponse updateUserRole(
+            @PathVariable Integer id,
+            @Valid @RequestBody UpdateRoleRequestDTO updateRoleRequestDTO
+    ) {
+        List<String> updateRoles = updateRoleRequestDTO.getRoles();
+        if(updateRoles == null || updateRoles.isEmpty()) {
+            return BaseResponse.makeResponse(400, "Roles cannot be empty");
+        }
+        for (String role : updateRoles) {
+            if (!List.of(ALLOWED_ROLES).contains(role)) {
+                return BaseResponse.makeResponse(400, "Role " + role + " is not allowed");
+            }
+        }
+        try {
+            usersService.updateUserRoles(id, updateRoles);
+            return BaseResponse.makeResponse(200);
+        } catch (Exception e) {
+            return BaseResponse.makeResponse(500, e.getMessage());
+        }
     }
 
 }

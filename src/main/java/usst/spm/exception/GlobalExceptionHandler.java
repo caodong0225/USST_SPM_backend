@@ -1,6 +1,7 @@
 package usst.spm.exception;
 
 import org.springframework.dao.PermissionDeniedDataAccessException;
+import org.springframework.security.access.AccessDeniedException;
 import usst.spm.result.BaseResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -67,10 +68,18 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler({AccessDeniedException.class})
+    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex) {
+        return new ResponseEntity<>(
+                new BaseResponse(403, ex.getMessage()),
+                HttpStatus.FORBIDDEN
+        );
+    }
+
     @ExceptionHandler({NoResourceFoundException.class})
     public ResponseEntity<?> handleNotFoundException(NoResourceFoundException ex) {
         return new ResponseEntity<>(
-                new BaseResponse(404, "Not Found"),
+                new BaseResponse(404, ex.getMessage()),
                 HttpStatus.NOT_FOUND
         );
     }
