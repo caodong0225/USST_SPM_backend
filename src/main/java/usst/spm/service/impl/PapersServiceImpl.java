@@ -10,4 +10,13 @@ import usst.spm.service.IPapersService;
  * @since 2024-11-26
  */
 public class PapersServiceImpl extends ServiceImpl<PapersMapper, Papers> implements IPapersService {
+    @Override
+    public boolean changePaperStatus(Integer paperId, String status) {
+        Papers paper = getById(paperId);
+        if (paper == null) {
+            return false;
+        }
+        paper.setStatus(status);
+        return updateById(paper);
+    }
 }
