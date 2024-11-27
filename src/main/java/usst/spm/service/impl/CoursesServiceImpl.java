@@ -2,8 +2,10 @@ package usst.spm.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import usst.spm.entity.CourseParticipants;
 import usst.spm.entity.Courses;
 import usst.spm.mapper.CoursesMapper;
+import usst.spm.service.ICourseParticipantsService;
 import usst.spm.service.ICoursesService;
 
 /**
@@ -14,6 +16,13 @@ import usst.spm.service.ICoursesService;
 @Service
 public class CoursesServiceImpl extends ServiceImpl<CoursesMapper, Courses> implements ICoursesService {
 
+    private final ICourseParticipantsService courseParticipantsService;
+
+
+    public CoursesServiceImpl(ICourseParticipantsService courseParticipantsService) {
+        this.courseParticipantsService = courseParticipantsService;
+    }
+
     @Override
     public boolean createCourse(Courses course) {
         return this.save(course);
@@ -22,6 +31,14 @@ public class CoursesServiceImpl extends ServiceImpl<CoursesMapper, Courses> impl
     @Override
     public boolean updateCourse(Courses course) {
         return this.updateById(course);
+    }
+
+    @Override
+    public boolean userInCourse(Integer courseId, Integer userId) {
+        return courseParticipantsService.lambdaQuery()
+                .eq(CourseParticipants::getCourseId, courseId)
+                .eq(CourseParticipants::getUserId, userId)
+                .count() > 0;
     }
 }
 

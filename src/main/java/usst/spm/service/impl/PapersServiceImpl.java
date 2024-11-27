@@ -19,4 +19,10 @@ public class PapersServiceImpl extends ServiceImpl<PapersMapper, Papers> impleme
         paper.setStatus(status);
         return updateById(paper);
     }
+
+    @Override
+    public Papers getPaperById(Integer paperId) {
+        return getById(paperId);
+    }
+
 }

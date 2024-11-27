@@ -9,4 +9,7 @@ import usst.spm.entity.Papers;
  */
 public interface IPapersService extends IService<Papers> {
     boolean changePaperStatus(Integer paperId, String status);
+
+    Papers getPaperById(Integer paperId);
+
 }

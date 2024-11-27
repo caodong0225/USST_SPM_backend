@@ -11,4 +11,6 @@ import usst.spm.entity.Courses;
 public interface ICoursesService extends IService<Courses> {
     boolean createCourse(Courses course);
     boolean updateCourse(Courses course);
+
+    boolean userInCourse(Integer courseId, Integer userId);
 }
