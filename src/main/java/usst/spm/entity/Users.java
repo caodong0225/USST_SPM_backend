@@ -32,12 +32,14 @@ public class Users implements Serializable {
      * 创建时间
      */
     @Schema(description = "创建时间", example = "1720524833000L")
+    @JsonIgnore
     private LocalDateTime createdAt;
 
     /**
      * 更新时间
      */
     @Schema(description = "更新时间", example = "1720524833000L")
+    @JsonIgnore
     private LocalDateTime updatedAt;
 
     /**
