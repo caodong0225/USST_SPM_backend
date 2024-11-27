@@ -5,7 +5,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 import usst.spm.annotation.PreventDuplicateSubmit;
-import usst.spm.controller.RegisterRequestDTO;
+import usst.spm.dto.RegisterRequestDTO;
 import usst.spm.result.GeneralDataResponse;
 import usst.spm.service.RedisService;
 

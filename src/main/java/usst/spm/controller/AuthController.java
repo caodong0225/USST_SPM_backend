@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import usst.spm.annotation.AntiBrutePasswordExporter;
 import usst.spm.annotation.PreventDuplicateSubmit;
 import usst.spm.dto.LoginDTO;
+import usst.spm.dto.RegisterRequestDTO;
 import usst.spm.result.GeneralDataResponse;
 import usst.spm.vo.LoginDataResponseVO;
 import usst.spm.entity.UserLogin;
