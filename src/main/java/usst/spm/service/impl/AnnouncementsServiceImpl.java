@@ -1,6 +1,8 @@
 package usst.spm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import usst.spm.entity.Announcements;
@@ -25,5 +27,10 @@ public class AnnouncementsServiceImpl extends ServiceImpl<AnnouncementsMapper, A
         queryWrapper.orderByDesc("create_time");
         queryWrapper.last("LIMIT " + count);
         return baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public IPage<Announcements> getUserCourseAnnouncementsPage(Integer userId, int current, int size) {
+        return this.baseMapper.getUserCourseAnnouncementsPage(new Page<>(current, size), userId);
     }
 }

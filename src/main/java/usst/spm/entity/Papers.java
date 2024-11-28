@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 比赛表
+ * 试卷表
  * </p>
  *
- * @author vvbbnn00
+ * @author caodong0225
  * @since 2024-06-06
  */
 @Getter
@@ -80,4 +80,10 @@ public class Papers implements Serializable {
      */
     @Schema(description = "可见性",example = "true")
     private Boolean visible;
+
+    /**
+     * 课程id
+     */
+    @Schema(description = "课程id")
+    private Integer courseId;
 }

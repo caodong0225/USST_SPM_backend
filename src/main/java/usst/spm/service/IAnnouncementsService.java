@@ -1,5 +1,6 @@
 package usst.spm.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import usst.spm.entity.Announcements;
 
@@ -15,4 +16,5 @@ import java.util.List;
  */
 public interface IAnnouncementsService extends IService<Announcements> {
     List<Announcements> getLatestAnnouncements(int count);
+    IPage<Announcements> getUserCourseAnnouncementsPage(Integer userId, int current, int size);
 }

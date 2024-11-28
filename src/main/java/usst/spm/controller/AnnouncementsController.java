@@ -10,8 +10,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import usst.spm.entity.Announcements;
+import usst.spm.entity.UserLogin;
 import usst.spm.result.BaseDataResponse;
 import usst.spm.result.BaseResponse;
 import usst.spm.service.IAnnouncementsService;
@@ -42,11 +45,11 @@ public class AnnouncementsController {
     @GetMapping("/{id}/announcement")
     @Operation(summary = "获取课程公告", description = "获取课程公告")
     @Parameters({
-            @Parameter(name = "id", description = "比赛ID，最小为0"),
+            @Parameter(name = "id", description = "课程ID，最小为0"),
             @Parameter(name = "current", description = "当前页数，最小为1"),
             @Parameter(name = "size", description = "每页数量，范围在0~100")
     })
-    // TODO: 权限认证，确保只有教师可以查看公告
+    @PreAuthorize("@CourseExpression.canAccessCourse(#id)")
     public BaseResponse getAnnouncementByCompetitionId(
             @PathVariable @Min(value = 0, message = "最小为0") Integer id,
             @RequestParam(defaultValue = "1") @Min(value = 1, message = "最小为1") int current,
@@ -57,9 +60,23 @@ public class AnnouncementsController {
         }
 
         QueryWrapper<Announcements> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("competition_id", id);
+        queryWrapper.eq("course_id", id);
         queryWrapper.orderByDesc("created_at");
         IPage<Announcements> page = announcementsService.page(new Page<>(current, size), queryWrapper);
+        return new BaseDataResponse(page);
+    }
+
+    @GetMapping("/announcements/list")
+    @Operation(summary = "获取公告列表", description = "获取用户参加的所有课程的所有公告")
+    public BaseResponse getAnnouncements(
+            @RequestParam(defaultValue = "1") @Min(value = 1, message = "最小为1") int current,
+            @RequestParam(defaultValue = "10") @Range(min = 0, max = 100, message = "范围控制在0~100之间") int size
+    ) {
+        if (size <= 0 || size > 100) {
+            size = 10;
+        }
+        UserLogin users = (UserLogin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        IPage<Announcements> page = announcementsService.getUserCourseAnnouncementsPage((Integer) users.getUserId(), current, size);
         return new BaseDataResponse(page);
     }
 
