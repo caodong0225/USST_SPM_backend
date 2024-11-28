@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -111,6 +112,10 @@ public class AuthController {
     @ApiResponse(responseCode = "403", description = "未登录", content = @Content(schema = @Schema(implementation = BaseResponse.class)))
     @ApiResponse(responseCode = "500", description = "注销失败")
     public BaseDataResponse logout(HttpSession session) {
+        if(SecurityContextHolder.getContext().getAuthentication().getPrincipal() == "anonymousUser")
+        {
+            return new BaseDataResponse(403, "你必须先登录");
+        }
         UserLogin user = (UserLogin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         try {
             removeSession(user.getUserId(), user.getSessionId());
