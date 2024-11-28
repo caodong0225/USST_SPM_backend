@@ -1,7 +1,9 @@
 package usst.spm.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import usst.spm.entity.Courses;
+import usst.spm.vo.UsersVO;
 
 /**
 * @author jyzxc
@@ -11,6 +13,5 @@ import usst.spm.entity.Courses;
 public interface ICoursesService extends IService<Courses> {
     boolean createCourse(Courses course);
     boolean updateCourse(Courses course);
-
     boolean userInCourse(Integer courseId, Integer userId);
 }

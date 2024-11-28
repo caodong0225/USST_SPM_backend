@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  */
 @Data
 public class UserLogin implements UserDetails {
-    List<String> roles = Arrays.asList("teacher", "admin");
+    List<String> roles = Arrays.asList("teacher", "super-admin");
     private List<String> permissions;
     private String username;
     private Serializable userId;

@@ -16,5 +16,5 @@ public class UsersVO {
     @Schema(description = "邮箱")
     private String email;
     @Schema(description = "角色名称")
-    private String roleName; // 角色名称
+    private String roleName;
 }

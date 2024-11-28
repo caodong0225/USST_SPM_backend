@@ -26,7 +26,7 @@ public class CreateCourseDTO {
     /**
      * 课程图片
      */
-    private Integer coursePic;
+    private String coursePic;
 
     /**
      * 课程开始时间

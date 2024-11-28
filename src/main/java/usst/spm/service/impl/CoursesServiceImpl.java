@@ -40,6 +40,7 @@ public class CoursesServiceImpl extends ServiceImpl<CoursesMapper, Courses> impl
                 .eq(CourseParticipants::getUserId, userId)
                 .count() > 0;
     }
+
 }
 
 
