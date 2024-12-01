@@ -18,6 +18,12 @@ import usst.spm.entity.UserLogin;
 import usst.spm.result.BaseDataResponse;
 import usst.spm.result.BaseResponse;
 import usst.spm.service.IAnnouncementsService;
+import usst.spm.service.ICoursesService;
+import usst.spm.service.IUsersService;
+import usst.spm.vo.AnnouncementsVO;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -33,13 +39,16 @@ import usst.spm.service.IAnnouncementsService;
 @Tag(name = "公告管理接口", description = "公告相关接口")
 public class AnnouncementsController {
     private final IAnnouncementsService announcementsService;
-
+    private final IUsersService usersService;
+    private final ICoursesService coursesService;
 
     @Autowired
     public AnnouncementsController(
-            IAnnouncementsService announcementsService
+            IAnnouncementsService announcementsService, IUsersService usersService, ICoursesService coursesService
     ) {
         this.announcementsService = announcementsService;
+        this.usersService = usersService;
+        this.coursesService = coursesService;
     }
 
     @GetMapping("/{id}/announcement")
@@ -77,7 +86,15 @@ public class AnnouncementsController {
         }
         UserLogin users = (UserLogin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         IPage<Announcements> page = announcementsService.getUserCourseAnnouncementsPage((Integer) users.getUserId(), current, size);
-        return new BaseDataResponse(page);
+        List<AnnouncementsVO> announcementsVOList = new ArrayList<>();
+        for (Announcements announcement : page.getRecords()) {
+            AnnouncementsVO announcementsVO = new AnnouncementsVO();
+            announcementsVO.setAnnouncement(announcement);
+            announcementsVO.setCourse(coursesService.getById(announcement.getCourseId()));
+            announcementsVO.setUser(usersService.getById(announcement.getCreatorId()));
+            announcementsVOList.add(announcementsVO);
+        }
+        return new BaseDataResponse(announcementsVOList);
     }
 
 
