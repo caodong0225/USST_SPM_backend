@@ -15,6 +15,7 @@ public class UserCoursesVO {
     private Integer courseId;
     private String courseName;
     private String courseDesc;
+    private String coursePic;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String status;

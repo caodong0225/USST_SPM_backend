@@ -46,6 +46,7 @@ public interface CourseParticipantsMapper extends BaseMapper<CourseParticipants>
         c.id AS courseId,
         c.course_name AS courseName,
         c.course_desc AS courseDesc,
+        c.course_pic AS coursePic,
         c.start_time AS startTime,
         c.end_time AS endTime,
         c.status AS status,

@@ -76,7 +76,7 @@ public class CoursesController {
 
     @GetMapping("/list")
     @Operation(summary = "获取课程列表")
-    public ResponseEntity<IPage<UserCoursesVO>> getUserCoursesPage(
+    public GeneralDataResponse<IPage<UserCoursesVO>> getUserCoursesPage(
             @RequestParam(defaultValue = "1") @Min(0) int pageNum,
             @RequestParam(defaultValue = "10") @Min(0) int pageSize) {
         if(SecurityContextHolder.getContext().getAuthentication().getPrincipal() == "anonymousUser")
@@ -86,7 +86,7 @@ public class CoursesController {
         UserLogin users = (UserLogin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Integer userId = (Integer) users.getUserId();
         IPage<UserCoursesVO> result = courseParticipantsService.getUserCoursesPage(new Page<>(pageNum, pageSize), userId);
-        return ResponseEntity.ok(result);
+        return new GeneralDataResponse<>(result);
     }
 
     @PostMapping("/add")
