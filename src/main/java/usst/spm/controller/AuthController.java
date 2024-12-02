@@ -53,9 +53,9 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(summary = "用户登录接口", description = "用户登录，返回用户信息，需要在请求头中添加User-Agent，要求用户名和密码并且用户未登录")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "登录成功", content = @Content(schema = @Schema(implementation = LoginDataResponseVO.class))),
-            @ApiResponse(responseCode = "400", description = "已经登录或者请求参数错误"),
-            @ApiResponse(responseCode = "401", description = "用户名或密码错误")
+            @ApiResponse(responseCode = "200", description = "登录成功"),
+            @ApiResponse(responseCode = "400", description = "已经登录或者请求参数错误",content = @Content(schema = @Schema(implementation = BaseResponse.class))),
+            @ApiResponse(responseCode = "401", description = "用户名或密码错误",content = @Content(schema = @Schema(implementation = BaseResponse.class)))
     })
     @AntiBrutePasswordExporter(maxTry = 10, waitTime = 100)
     public GeneralDataResponse<LoginDataResponseVO> login(
