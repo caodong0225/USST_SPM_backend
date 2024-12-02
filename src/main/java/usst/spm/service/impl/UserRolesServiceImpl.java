@@ -20,4 +20,14 @@ public class UserRolesServiceImpl extends ServiceImpl<UserRolesMapper, UserRoles
                 .in(UserRoles::getRoleName, "admin", "super-admin")
                 .count() > 0;
     }
+
+    @Override
+    public String[] getRoleNameByUserId(Integer userId) {
+        return this.lambdaQuery()
+                .eq(UserRoles::getUserId, userId)
+                .list()
+                .stream()
+                .map(UserRoles::getRoleName)
+                .toArray(String[]::new);
+    }
 }

@@ -20,6 +20,7 @@ import usst.spm.annotation.PreventDuplicateSubmit;
 import usst.spm.dto.LoginDTO;
 import usst.spm.dto.RegisterRequestDTO;
 import usst.spm.result.GeneralDataResponse;
+import usst.spm.service.IUserRolesService;
 import usst.spm.vo.LoginDataResponseVO;
 import usst.spm.entity.UserLogin;
 import usst.spm.entity.Users;
@@ -46,6 +47,7 @@ import java.util.Map;
 @Validated
 public class AuthController {
     private final IUsersService usersService;
+    private final IUserRolesService userRolesService;
     private final RedisService redisService;
 
     @PostMapping("/login")
@@ -56,23 +58,28 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "用户名或密码错误")
     })
     @AntiBrutePasswordExporter(maxTry = 10, waitTime = 100)
-    public BaseResponse login(
+    public GeneralDataResponse<LoginDataResponseVO> login(
             @Valid @RequestBody LoginDTO loginRequestDTO,
             HttpSession session,
             @RequestHeader("User-Agent") @Schema(description = "用户登录请求头") String userAgent,
             HttpServletRequest request
     ) {
         if (session.getAttribute("userSession") != null) {
-            return new BaseResponse(400, "您已经登陆了");
+            return new GeneralDataResponse<>(400, "您已经登陆了");
         }
         String username = loginRequestDTO.getUsername();
         String password = loginRequestDTO.getPassword();
         Users user = usersService.login(username, password);
         if (user == null) {
-            return new BaseResponse(401, "用户名或密码错误");
+            return new GeneralDataResponse<>(401, "用户名或密码错误");
         }
         setRedis(user.getId(), session, userAgent, request);
-        return new LoginDataResponseVO(session.getId(), user);
+        String[] roleName = userRolesService.getRoleNameByUserId(user.getId());
+        LoginDataResponseVO loginDataResponseVO = new LoginDataResponseVO();
+        loginDataResponseVO.setUsers(user);
+        loginDataResponseVO.setRoles(roleName);
+        loginDataResponseVO.setSessionId(session.getId());
+        return new GeneralDataResponse<>(loginDataResponseVO);
     }
 
     @GetMapping("/session/list")

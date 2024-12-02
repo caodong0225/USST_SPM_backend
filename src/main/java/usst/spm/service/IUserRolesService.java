@@ -9,4 +9,5 @@ import usst.spm.entity.UserRoles;
  */
 public interface IUserRolesService extends IService<UserRoles> {
     boolean isUserAdmin(Integer userId);
+    String[] getRoleNameByUserId(Integer userId);
 }

@@ -14,17 +14,7 @@ import usst.spm.result.BaseResponse;
 @Setter
 @Schema(description = "登录成功后的响应体")
 public class LoginDataResponseVO extends BaseResponse {
-    @Schema(description = "会话ID", example = "bad5684c-31c3-469a-adc8-8e5361c1b27b")
-    private String sessionId;
-    private Users user;
-
-    public LoginDataResponseVO() {
-        super();
-    }
-
-    public LoginDataResponseVO(String sessionId, Users user) {
-        super();
-        this.sessionId = sessionId;
-        this.user = user;
-    }
+    Users users;
+    String[] roles;
+    String sessionId;
 }
