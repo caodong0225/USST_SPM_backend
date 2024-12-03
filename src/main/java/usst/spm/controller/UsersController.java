@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
@@ -31,6 +32,7 @@ import usst.spm.entity.Users;
 import usst.spm.result.BaseResponse;
 import usst.spm.result.GeneralDataResponse;
 import usst.spm.service.IUsersService;
+import usst.spm.service.MinioService;
 import usst.spm.vo.UsersVO;
 
 import java.util.List;
@@ -61,6 +63,11 @@ public class UsersController {
     private static final String[] ALLOWED_ROLES = new String[]{
             "teacher",
     };
+
+    @Resource
+    private MinioService minioService;
+
+    private static final String DIRECTORY_NAME = "user";
 
     @GetMapping("/list")
     @Schema(description = "获取用户列表")
@@ -118,25 +125,24 @@ public class UsersController {
     @ApiResponse(responseCode = "404", description = "用户未找到")
     @ApiResponse(responseCode = "200", description = "成功")
     @GetMapping("/get/{id}")
-    public ResponseEntity<GeneralDataResponse<UserInfo>> getUserInfoById(
+    public GeneralDataResponse<UserInfo> getUserInfoById(
             @Min(value = 0, message = "用户id必须大于0") @PathVariable Long id
     ) {
         UserInfo userInfo = usersService.getUserInfo(id);
         if (userInfo == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new GeneralDataResponse<>(404, "User not found"));
+            return new GeneralDataResponse<>(404, "用户未找到");
         }
         if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() != "anonymousUser") {
             UserLogin user = (UserLogin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             // 只有管理员或者是自己才能看到完整信息
             if (user.isAdmin() || user.getUserId().equals(id)) {
-                return ResponseEntity.ok(new GeneralDataResponse<>(userInfo));
+                return new GeneralDataResponse<>(userInfo);
             }
         }
         // TODO: 脱敏处理，过滤掉敏感信息，
         Map<String, Object> userExtraInfo = userInfo.getUserExtraInfo();
         userInfo.setUserExtraInfo(userExtraInfo);
-        return ResponseEntity.ok(new GeneralDataResponse<>(userInfo));
+        return new GeneralDataResponse<>(userInfo);
     }
 
     @PutMapping("/change/{id}/role")
@@ -180,6 +186,14 @@ public class UsersController {
             @RequestBody UpdateExtraRequestDTO value
     ) {
         try {
+            if("pic".equals(key))
+            {
+                try {
+                    value.setValue(minioService.setPictureUri(value.getValue(),DIRECTORY_NAME));
+                } catch (Exception e) {
+                    return BaseResponse.makeResponse(500, e.getMessage());
+                }
+            }
             usersService.updateUserExt(id, key, value.getValue());
             return BaseResponse.makeResponse(200);
         } catch (Exception e) {

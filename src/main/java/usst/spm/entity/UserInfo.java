@@ -19,7 +19,7 @@ public class UserInfo implements Serializable {
     @Schema(description = "用户的基本信息")
     private Users user;
     @Schema(description = "用户的角色信息")
-    private List<UserRoles> userRoles;
+    private List<String> userRoles;
     @Schema(description = "用户的额外信息")
     private Map<String, Object> userExtraInfo;
 }

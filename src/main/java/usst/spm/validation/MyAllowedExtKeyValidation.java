@@ -18,6 +18,7 @@ public class MyAllowedExtKeyValidation implements ConstraintValidator<MyAllowedE
             "college",
             "sex",
             "description",
+            "pic"
     };
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {

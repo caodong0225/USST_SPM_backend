@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -112,7 +111,11 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         userInfo.setUser(user);
         userInfo.setUserRoles(userRolesService.lambdaQuery()
                 .eq(UserRoles::getUserId, userId)
-                .list());
+                .list()
+                .stream()
+                .map(UserRoles::getRoleName)
+                .toList()
+        );
         userInfo.setUserExtraInfo(userExtsService.lambdaQuery()
                 .eq(UserExts::getUserId, userId)
                 .list()
