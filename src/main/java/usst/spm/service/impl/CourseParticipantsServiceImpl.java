@@ -28,4 +28,12 @@ public class CourseParticipantsServiceImpl extends ServiceImpl<CourseParticipant
     public IPage<UserCoursesVO> getUserCoursesPage(Page<Object> objectPage, Integer userId) {
         return this.baseMapper.getUserCoursesPage(objectPage, userId);
     }
+
+    @Override
+    public boolean insertCourseParticipant(Integer courseId, Integer userId) {
+        CourseParticipants courseParticipants = new CourseParticipants();
+        courseParticipants.setCourseId(courseId);
+        courseParticipants.setUserId(userId);
+        return this.save(courseParticipants);
+    }
 }

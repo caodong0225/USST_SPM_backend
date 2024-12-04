@@ -13,4 +13,15 @@ import usst.spm.service.IUserExtsService;
 @Service
 public class UserExtsServiceImpl extends ServiceImpl<UserExtsMapper, UserExts> implements IUserExtsService {
 
+    @Override
+    public String getPicture(Integer userId) {
+        UserExts userExts = this.lambdaQuery()
+                .eq(UserExts::getUserId, userId)
+                .eq(UserExts::getKey, "pic")
+                .one();
+        if (userExts == null) {
+            return null;
+        }
+        return userExts.getValue();
+    }
 }

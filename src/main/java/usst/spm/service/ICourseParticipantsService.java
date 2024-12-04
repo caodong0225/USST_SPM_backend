@@ -17,4 +17,5 @@ public interface ICourseParticipantsService extends IService<CourseParticipants>
     IPage<CourseParticipantsVO> getParticipantsPage(Page<Object> objectPage, Integer courseId, QueryWrapper<Users> queryWrapper);
 
     IPage<UserCoursesVO> getUserCoursesPage(Page<Object> objectPage, Integer userId);
+    boolean insertCourseParticipant(Integer courseId, Integer userId);
 }

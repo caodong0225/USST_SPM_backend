@@ -21,10 +21,7 @@ import usst.spm.entity.UserLogin;
 import usst.spm.entity.Users;
 import usst.spm.result.BaseResponse;
 import usst.spm.result.GeneralDataResponse;
-import usst.spm.service.ICourseParticipantsService;
-import usst.spm.service.ICoursesService;
-import usst.spm.service.IUsersService;
-import usst.spm.service.MinioService;
+import usst.spm.service.*;
 import usst.spm.vo.CourseInfoVO;
 import usst.spm.vo.CourseParticipantsVO;
 import usst.spm.vo.UserCoursesVO;
@@ -43,6 +40,7 @@ import java.time.LocalDateTime;
 public class CoursesController {
     private final ICoursesService coursesService;
     private final IUsersService usersService;
+    private final IUserExtsService userExtsService;
     private final ICourseParticipantsService courseParticipantsService;
     @Resource
     private final MinioService minioService;
@@ -100,6 +98,7 @@ public class CoursesController {
             @RequestBody CreateCourseDTO createCourseDTO
     ) throws Exception {
         Courses course = new Courses();
+        UserLogin users = (UserLogin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (createCourseDTO.getStartTime() == null || createCourseDTO.getEndTime() == null) {
             throw new IllegalArgumentException("开始时间和结束时间不能为空");
         }
@@ -114,9 +113,12 @@ public class CoursesController {
         course.setCourseDesc(createCourseDTO.getCourseDesc());
         course.setStartTime(createCourseDTO.getStartTime());
         course.setEndTime(createCourseDTO.getEndTime());
+        // 设置课程图片
+        course.setUserId((Integer) users.getUserId());
         course.setStatus(now.isBefore(createCourseDTO.getStartTime()) ? "upcoming" : now.isAfter(createCourseDTO.getEndTime()) ? "ended" : "ongoing");
         coursesService.save(course);
         // TODO: 添加spring quartz定时任务
+        courseParticipantsService.insertCourseParticipant(course.getId(), (Integer) users.getUserId());
         return new GeneralDataResponse<>(course);
     }
 
@@ -133,6 +135,7 @@ public class CoursesController {
         CourseInfoVO courseInfoVO = new CourseInfoVO();
         courseInfoVO.setCourse(course);
         courseInfoVO.setTeacher(teacher);
+        courseInfoVO.setPicture(userExtsService.getPicture(teacher.getId()));
         return new GeneralDataResponse<>(courseInfoVO);
     }
 

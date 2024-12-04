@@ -11,7 +11,7 @@
  Target Server Version : 80038 (8.0.38)
  File Encoding         : 65001
 
- Date: 28/11/2024 16:52:22
+ Date: 04/12/2024 23:57:57
 */
 
 SET NAMES utf8mb4;
@@ -44,14 +44,14 @@ CREATE TABLE `course_participants`  (
                                         `id` int NOT NULL AUTO_INCREMENT COMMENT '主键',
                                         `course_id` int NOT NULL COMMENT '课程id',
                                         `user_id` int NOT NULL COMMENT '用户id',
-                                        `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户状态',
+                                        `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'normal' COMMENT '用户状态',
                                         `comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '备注',
                                         PRIMARY KEY (`id`) USING BTREE,
                                         INDEX `course_participants_courses_id_fk`(`course_id` ASC) USING BTREE,
                                         INDEX `course_participants_users_id_fk`(`user_id` ASC) USING BTREE,
                                         CONSTRAINT `course_participants_courses_id_fk` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
                                         CONSTRAINT `course_participants_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '课程的参与者' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '课程的参与者' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for courses
@@ -61,7 +61,7 @@ CREATE TABLE `courses`  (
                             `id` int NOT NULL AUTO_INCREMENT COMMENT '主键',
                             `course_name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '课程名称',
                             `course_desc` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '课程描述',
-                            `course_pic` int NULL DEFAULT NULL COMMENT '课程图片',
+                            `course_pic` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '课程图片',
                             `start_time` timestamp NOT NULL COMMENT '课程开始时间',
                             `end_time` timestamp NOT NULL COMMENT '课程结束时间',
                             `status` varchar(63) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '课程当前状态',
@@ -71,7 +71,7 @@ CREATE TABLE `courses`  (
                             PRIMARY KEY (`id`) USING BTREE,
                             INDEX `courses_users_id_fk`(`user_id` ASC) USING BTREE,
                             CONSTRAINT `courses_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '所开设课程' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '所开设课程' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for notifications
@@ -104,7 +104,7 @@ CREATE TABLE `paper_questions`  (
                                     INDEX `paper_questions_questions_id_fk`(`question_id` ASC) USING BTREE,
                                     CONSTRAINT `paper_questions_papers_id_fk` FOREIGN KEY (`paper_id`) REFERENCES `papers` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
                                     CONSTRAINT `paper_questions_questions_id_fk` FOREIGN KEY (`question_id`) REFERENCES `questions` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '试卷的问题列表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '试卷的问题列表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for papers

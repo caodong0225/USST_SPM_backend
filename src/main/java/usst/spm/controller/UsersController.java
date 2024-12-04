@@ -17,7 +17,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Range;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,6 +30,7 @@ import usst.spm.entity.UserLogin;
 import usst.spm.entity.Users;
 import usst.spm.result.BaseResponse;
 import usst.spm.result.GeneralDataResponse;
+import usst.spm.service.IUserExtsService;
 import usst.spm.service.IUsersService;
 import usst.spm.service.MinioService;
 import usst.spm.vo.UsersVO;
@@ -252,5 +252,5 @@ public class UsersController {
             return BaseResponse.makeResponse(500, e.getMessage());
         }
     }
-    
+
 }

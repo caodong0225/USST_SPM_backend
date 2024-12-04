@@ -8,5 +8,5 @@ import usst.spm.entity.UserExts;
  * @since 2024-11-12
  */
 public interface IUserExtsService extends IService<UserExts> {
-
+    String getPicture(Integer userId);
 }

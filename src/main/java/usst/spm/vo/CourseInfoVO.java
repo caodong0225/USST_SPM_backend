@@ -14,4 +14,5 @@ import usst.spm.entity.Users;
 public class CourseInfoVO {
     private Courses course;
     private Users teacher;
+    private String picture;
 }
