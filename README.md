@@ -19,11 +19,25 @@ docker run -p 6379:6379 --name myredis -d redis
 docker run -p 3306:3306 -d --name mysql8 -e MYSQL_ROOT_PASSWORD=123456 mysql:8
 ```
 
+输入以下命令开启`rocketmq`
+
+```bash
+docker run -d --name rmqnamesrv -p 9876:9876 apache/rocketmq:latest sh mqnamesrv
+```
+
+输入以下命令开启`minio`
+
+```bash
+docker run -d --name minio -p 9000:9000 -p 9090:9090 -v /mnt/data:/data minio/minio server /data
+```
+
 进入`docker desktop`，确保`mysql`和`redis`服务正常运行
 
 ![1](./docs/1.png)
 
-然后找到`src/main/resources/application.yaml`文件：
+然后找到`src/main/resources/application.example.yaml`文件：
+
+里面`minio`文件存储服务的token的配置可以自行网上搜索
 
 ```yaml
 spring:
@@ -34,7 +48,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 123456
-    url: jdbc:mysql://localhost:3306/flappy_bird?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/spm?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true
   data:
     redis:
       host: localhost
@@ -42,7 +56,30 @@ spring:
       database: 3
   main:
     allow-bean-definition-overriding: true
+minio:
+  endpoint: http://localhost:9000           # 替换为您的 MinIO 服务地址
+  access-key: 2IapYfTR6v67wch7DsBK               # 替换为您的 MinIO Access Key
+  secret-key: 1EMUw3wEsDfPSoXQGWXEjupsKwb89ByIdfCdkVMn               # 替换为您的 MinIO Secret Key
+  bucket-name: spm              # 替换为您想使用的 Bucket 名称
+security:
+  paths:
+    publicRoutes:
+      - /doc.html
+      - /webjars/**
+      - /v3/api-docs/**
+      - /auth/**
+    authenticated:
+      - /user/**  # 需要登录的路径
+      - /course/**
 # 在生产环境中，需要禁用swagger
+rocketmq:
+  name-server: 127.0.0.1:9876
+  producer:
+    group: producer-group # 生产者组
+    send-message-timeout: 3000 # 发送超时时间
+  consumer:
+    group: consumer-group # 消费者组
+    topic: test-topic # 消息主题
 springdoc:
   api-docs:
     enabled: true
@@ -56,7 +93,7 @@ server:
   forward-headers-strategy: framework
 ```
 
-确保`mysql`的配置信息，`redis`的配置信息，文件上传和下载的路径配置没有任何问题。
+确保`mysql`的配置信息，`redis`的配置信息，文件上传和下载的路径配置没有任何问题。然后把他重命名为`application.yaml`文件
 
 然后找到`src/main/resources/db/spm.sql`文件，打开`mysql`创建`spm`数据库
 
