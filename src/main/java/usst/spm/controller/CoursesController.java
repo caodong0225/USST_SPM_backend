@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Range;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +24,7 @@ import usst.spm.result.GeneralDataResponse;
 import usst.spm.service.ICourseParticipantsService;
 import usst.spm.service.ICoursesService;
 import usst.spm.service.IUsersService;
+import usst.spm.service.MinioService;
 import usst.spm.vo.CourseInfoVO;
 import usst.spm.vo.CourseParticipantsVO;
 import usst.spm.vo.UserCoursesVO;
@@ -43,6 +44,9 @@ public class CoursesController {
     private final ICoursesService coursesService;
     private final IUsersService usersService;
     private final ICourseParticipantsService courseParticipantsService;
+    @Resource
+    private final MinioService minioService;
+    private static final String DIRECTORY_NAME = "course";
 
     @GetMapping("/participants/list/{id}")
     @Operation(summary = "获取课程参与者列表")
@@ -92,9 +96,9 @@ public class CoursesController {
     @PostMapping("/add")
     @Operation(summary = "添加课程")
     @PreAuthorize("@AuthExpression.isTeacher()")
-    public BaseResponse addCourse(
+    public GeneralDataResponse<Courses> addCourse(
             @RequestBody CreateCourseDTO createCourseDTO
-    ) {
+    ) throws Exception {
         Courses course = new Courses();
         if (createCourseDTO.getStartTime() == null || createCourseDTO.getEndTime() == null) {
             throw new IllegalArgumentException("开始时间和结束时间不能为空");
@@ -105,6 +109,7 @@ public class CoursesController {
         }
         // 获取当前时间
         LocalDateTime now = LocalDateTime.now();
+        course.setCoursePic(minioService.setPictureUri(createCourseDTO.getCoursePic(), DIRECTORY_NAME));
         course.setCourseName(createCourseDTO.getCourseName());
         course.setCourseDesc(createCourseDTO.getCourseDesc());
         course.setStartTime(createCourseDTO.getStartTime());
@@ -112,7 +117,7 @@ public class CoursesController {
         course.setStatus(now.isBefore(createCourseDTO.getStartTime()) ? "upcoming" : now.isAfter(createCourseDTO.getEndTime()) ? "ended" : "ongoing");
         coursesService.save(course);
         // TODO: 添加spring quartz定时任务
-        return BaseResponse.makeResponse(200, "添加成功");
+        return new GeneralDataResponse<>(course);
     }
 
     @GetMapping("/get/{id}")

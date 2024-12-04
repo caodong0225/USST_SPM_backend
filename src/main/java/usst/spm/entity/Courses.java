@@ -39,7 +39,7 @@ public class Courses implements Serializable {
      * 课程图片
      */
     @TableField(value = "course_pic")
-    private Integer coursePic;
+    private String coursePic;
 
     /**
      * 课程开始时间
