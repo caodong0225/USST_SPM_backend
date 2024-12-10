@@ -9,5 +9,5 @@ import usst.spm.entity.Questions;
 * @createDate 2024-11-25 23:31:40
 */
 public interface IQuestionsService extends IService<Questions> {
-
+    boolean insertQuestion(Questions questions);
 }

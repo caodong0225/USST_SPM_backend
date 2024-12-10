@@ -15,6 +15,10 @@ import usst.spm.service.IQuestionsService;
 public class QuestionsServiceImpl extends ServiceImpl<QuestionsMapper, Questions>
     implements IQuestionsService {
 
+    @Override
+    public boolean insertQuestion(Questions questions) {
+        return this.save(questions);
+    }
 }
 
 
