@@ -10,4 +10,5 @@ import usst.spm.entity.Questions;
 */
 public interface IQuestionsService extends IService<Questions> {
     boolean insertQuestion(Questions questions);
+    boolean deleteQuestionById(Integer questionId);
 }

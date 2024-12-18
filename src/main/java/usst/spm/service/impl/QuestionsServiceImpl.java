@@ -19,6 +19,11 @@ public class QuestionsServiceImpl extends ServiceImpl<QuestionsMapper, Questions
     public boolean insertQuestion(Questions questions) {
         return this.save(questions);
     }
+
+    @Override
+    public boolean deleteQuestionById(Integer questionId) {
+        return this.baseMapper.deleteById(questionId) > 0;
+    }
 }
 
 
