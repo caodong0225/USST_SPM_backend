@@ -5,24 +5,16 @@ import usst.spm.entity.Papers;
 import usst.spm.mapper.PapersMapper;
 import usst.spm.service.IPapersService;
 
+import java.util.List;
+
 /**
  * @author jyzxc
  * @since 2024-11-26
  */
 public class PapersServiceImpl extends ServiceImpl<PapersMapper, Papers> implements IPapersService {
     @Override
-    public boolean changePaperStatus(Integer paperId, String status) {
-        Papers paper = getById(paperId);
-        if (paper == null) {
-            return false;
-        }
-        paper.setStatus(status);
-        return updateById(paper);
-    }
-
-    @Override
-    public Papers getPaperById(Integer paperId) {
-        return getById(paperId);
+    public List<Papers> getPapersById(Integer courseId) {
+        return this.lambdaQuery().eq(Papers::getCourseId, courseId).list();
     }
 
 }
