@@ -2,9 +2,11 @@ package usst.spm.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import usst.spm.dto.CreatePaperDTO;
 import usst.spm.entity.Papers;
+import usst.spm.entity.UserLogin;
 import usst.spm.result.BaseResponse;
 import usst.spm.result.GeneralDataResponse;
 import usst.spm.service.IPapersService;
@@ -58,8 +60,12 @@ public class PapersController {
 
     @GetMapping("/{id}/list")
     public GeneralDataResponse<List<Papers>> listPaper(@PathVariable("id") Integer id) {
+        UserLogin user = (UserLogin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // do something
         List<Papers> papers = papersService.getPapersById(id);
+        if(!user.isAdmin()){
+            papers.removeIf(paper -> !paper.getVisible());
+        }
         return new GeneralDataResponse<>(200, "获取成功", papers);
     }
 }

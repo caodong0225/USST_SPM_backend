@@ -50,13 +50,13 @@ public class MinioService {
      * @throws Exception 如果发生错误
      */
     public String getFileUrl(String objectName) throws Exception {
-        return minioClient.getPresignedObjectUrl(
+        String URI = minioClient.getPresignedObjectUrl(
                 io.minio.GetPresignedObjectUrlArgs.builder()
                         .bucket(BUCKET_NAME)
                         .object(objectName)
                         .method(io.minio.http.Method.GET)
-                        .build()
-        );
+                        .build());
+        return URI.split("\\?")[0];
     }
 
     /**
