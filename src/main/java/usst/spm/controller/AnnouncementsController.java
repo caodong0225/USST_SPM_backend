@@ -13,10 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import usst.spm.dto.CreateAnnouncementDTO;
 import usst.spm.entity.Announcements;
 import usst.spm.entity.UserLogin;
 import usst.spm.result.BaseDataResponse;
 import usst.spm.result.BaseResponse;
+import usst.spm.result.GeneralDataResponse;
 import usst.spm.service.IAnnouncementsService;
 import usst.spm.service.ICoursesService;
 import usst.spm.service.IUsersService;
@@ -59,7 +61,7 @@ public class AnnouncementsController {
             @Parameter(name = "size", description = "每页数量，范围在0~100")
     })
     @PreAuthorize("@CourseExpression.canAccessCourse(#id)")
-    public BaseResponse getAnnouncementByCompetitionId(
+    public GeneralDataResponse<IPage<Announcements>> getAnnouncementByCompetitionId(
             @PathVariable @Min(value = 0, message = "最小为0") Integer id,
             @RequestParam(defaultValue = "1") @Min(value = 1, message = "最小为1") int current,
             @RequestParam(defaultValue = "10") @Range(min = 0, max = 100, message = "范围控制在0~100之间") int size
@@ -72,7 +74,7 @@ public class AnnouncementsController {
         queryWrapper.eq("course_id", id);
         queryWrapper.orderByDesc("created_at");
         IPage<Announcements> page = announcementsService.page(new Page<>(current, size), queryWrapper);
-        return new BaseDataResponse(page);
+        return new GeneralDataResponse<>(page);
     }
 
     @GetMapping("/announcements/list")
@@ -97,5 +99,22 @@ public class AnnouncementsController {
         return new BaseDataResponse(announcementsVOList);
     }
 
-
+    @PostMapping("/{courseId}/announcement")
+    @Operation(summary = "添加公告", description = "添加公告")
+    @PreAuthorize("@CourseExpression.canAccessCourse(#courseId)")
+    public BaseResponse addAnnouncement(
+            @PathVariable Integer courseId,
+            @RequestBody CreateAnnouncementDTO createAnnouncementDTO
+    ) {
+        UserLogin users = (UserLogin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Announcements announcement = new Announcements();
+        announcement.setCourseId(courseId);
+        announcement.setCreatorId((Integer) users.getUserId());
+        announcement.setTitle(createAnnouncementDTO.getTitle());
+        announcement.setContent(createAnnouncementDTO.getContent());
+        if (!announcementsService.save(announcement)) {
+            return BaseResponse.makeResponse(400, "添加失败");
+        }
+        return BaseResponse.makeResponse(200, "添加成功");
+    }
 }
