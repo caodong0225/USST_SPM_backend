@@ -76,6 +76,17 @@ public class CoursesController {
         return new GeneralDataResponse<>(usersPage);
     }
 
+    @PostMapping("/participants/add/{id}")
+    @Operation(summary = "添加课程参与者")
+    @PreAuthorize("@CourseExpression.canEditCourse(#id)")
+    public BaseResponse addParticipant(
+            @Min(value = 0, message = "课程id必须大于0") @PathVariable Integer id,
+            @RequestParam @Min(value = 0, message = "用户id必须大于0") Integer userId
+    ) {
+        courseParticipantsService.insertCourseParticipant(id, userId);
+        return BaseResponse.makeResponse(200, "添加成功");
+    }
+
     @GetMapping("/list")
     @Operation(summary = "获取课程列表")
     public GeneralDataResponse<IPage<UserCoursesVO>> getUserCoursesPage(

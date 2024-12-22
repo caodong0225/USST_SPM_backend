@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import usst.spm.entity.CourseParticipants;
 import usst.spm.entity.Users;
@@ -39,6 +41,18 @@ public interface CourseParticipantsMapper extends BaseMapper<CourseParticipants>
         cp.course_id = #{courseId}
         ${ew.customSqlSegment}
 """)
+    @Results({
+            @Result(property = "courseParticipants.id", column = "courseParticipants_id"),
+            @Result(property = "courseParticipants.courseId", column = "courseParticipants_courseId"),
+            @Result(property = "courseParticipants.userId", column = "courseParticipants_userId"),
+            @Result(property = "courseParticipants.status", column = "courseParticipants_status"),
+            @Result(property = "courseParticipants.comment", column = "courseParticipants_comment"),
+            @Result(property = "users.id", column = "users_id"),
+            @Result(property = "users.username", column = "users_username"),
+            @Result(property = "users.nickname", column = "users_nickname"),
+            @Result(property = "users.email", column = "users_email"),
+            @Result(property = "users.phone", column = "users_phone")
+    })
     IPage<CourseParticipantsVO> getParticipantsPage(Page<?> page, Integer courseId, @Param(Constants.WRAPPER) QueryWrapper<Users> queryWrapper);
 
     @Select("""

@@ -15,7 +15,7 @@ import usst.spm.vo.UsersVO;
  * @since 2024-11-12
  */
 public interface UsersMapper extends BaseMapper<Users> {
-    @Select("SELECT u.*, ur.role_name FROM users u " +
+    @Select("SELECT u.id,u.username,u.nickname,u.email, ur.role_name FROM users u " +
             "LEFT JOIN user_roles ur ON u.id = ur.user_id " +
             "${ew.customSqlSegment}")
     IPage<UsersVO> selectUsersWithRoles(Page<?> page, @Param(Constants.WRAPPER) QueryWrapper<Users> queryWrapper);
