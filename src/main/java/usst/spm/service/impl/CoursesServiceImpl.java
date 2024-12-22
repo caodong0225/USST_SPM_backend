@@ -1,5 +1,7 @@
 package usst.spm.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import usst.spm.entity.CourseParticipants;
@@ -39,6 +41,11 @@ public class CoursesServiceImpl extends ServiceImpl<CoursesMapper, Courses> impl
                 .eq(CourseParticipants::getCourseId, courseId)
                 .eq(CourseParticipants::getUserId, userId)
                 .count() > 0;
+    }
+
+    @Override
+    public IPage<Courses> getMyCreatedCourses(Integer userId, Integer current, Integer size) {
+        return this.lambdaQuery().eq(Courses::getUserId, userId).page(new Page<>(current, size));
     }
 
 }

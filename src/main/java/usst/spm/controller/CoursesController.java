@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import usst.spm.dto.CreateCourseDTO;
 import usst.spm.entity.Courses;
+import usst.spm.entity.UserInfo;
 import usst.spm.entity.UserLogin;
 import usst.spm.entity.Users;
 import usst.spm.result.BaseResponse;
@@ -83,8 +84,42 @@ public class CoursesController {
             @Min(value = 0, message = "课程id必须大于0") @PathVariable Integer id,
             @RequestParam @Min(value = 0, message = "用户id必须大于0") Integer userId
     ) {
-        courseParticipantsService.insertCourseParticipant(id, userId);
-        return BaseResponse.makeResponse(200, "添加成功");
+        UserInfo user = usersService.getUserInfo(userId);
+        if(user == null)
+        {
+            return BaseResponse.makeResponse(400, "用户不存在");
+        }
+        if(user.getUserRoles().contains("teacher") || user.getUserRoles().contains("super-admin"))
+        {
+            return BaseResponse.makeResponse(400, "不能添加老师或管理员");
+        }
+        if(courseParticipantsService.insertCourseParticipant(id, userId))
+        {
+            return BaseResponse.makeResponse(200, "添加成功");
+        }
+        return BaseResponse.makeResponse(400, "添加失败");
+    }
+
+    @DeleteMapping("/participants/delete/{id}")
+    @Operation(summary = "删除课程参与者")
+    @PreAuthorize("@CourseExpression.canEditCourse(#id)")
+    public BaseResponse deleteParticipant(
+            @Min(value = 0, message = "课程id必须大于0") @PathVariable Integer id,
+            @RequestParam @Min(value = 0, message = "用户id必须大于0") Integer userId
+    ) {
+        if(!courseParticipantsService.hasCourseParticipant(id, userId))
+        {
+            return BaseResponse.makeResponse(400, "用户不在课程中");
+        }
+        UserInfo user = usersService.getUserInfo(userId);
+        if(user.getUserRoles().contains("teacher") || user.getUserRoles().contains("super-admin"))
+        {
+            return BaseResponse.makeResponse(400, "不能删除老师或管理员");
+        }
+        if(courseParticipantsService.deleteCourseParticipant(id, userId)){
+            return BaseResponse.makeResponse(200, "删除成功");
+        }
+        return BaseResponse.makeResponse(400, "删除失败");
     }
 
     @GetMapping("/list")
@@ -131,6 +166,18 @@ public class CoursesController {
         // TODO: 添加spring quartz定时任务
         courseParticipantsService.insertCourseParticipant(course.getId(), (Integer) users.getUserId());
         return new GeneralDataResponse<>(course);
+    }
+
+    @GetMapping("/myCreated/list")
+    @Operation(summary = "获取我创建的课程列表")
+    @PreAuthorize("@AuthExpression.isTeacher()")
+    public GeneralDataResponse<IPage<Courses>> getMyCreatedCourses(
+            @RequestParam(defaultValue = "1") @Min(0) int pageNum,
+            @RequestParam(defaultValue = "10") @Min(0) int pageSize) {
+        UserLogin users = (UserLogin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = (Integer) users.getUserId();
+        IPage<Courses> result = coursesService.getMyCreatedCourses(userId, pageNum, pageSize);
+        return new GeneralDataResponse<>(result);
     }
 
     @GetMapping("/get/{id}")

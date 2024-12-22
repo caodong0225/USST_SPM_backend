@@ -14,4 +14,5 @@ public interface ICoursesService extends IService<Courses> {
     boolean createCourse(Courses course);
     boolean updateCourse(Courses course);
     boolean userInCourse(Integer courseId, Integer userId);
+    IPage<Courses> getMyCreatedCourses(Integer userId, Integer current, Integer size);
 }

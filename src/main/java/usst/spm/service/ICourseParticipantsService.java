@@ -18,4 +18,6 @@ public interface ICourseParticipantsService extends IService<CourseParticipants>
 
     IPage<UserCoursesVO> getUserCoursesPage(Page<Object> objectPage, Integer userId);
     boolean insertCourseParticipant(Integer courseId, Integer userId);
+    boolean deleteCourseParticipant(Integer courseId, Integer userId);
+    boolean hasCourseParticipant(Integer courseId, Integer userId);
 }

@@ -36,4 +36,14 @@ public class CourseParticipantsServiceImpl extends ServiceImpl<CourseParticipant
         courseParticipants.setUserId(userId);
         return this.save(courseParticipants);
     }
+
+    @Override
+    public boolean deleteCourseParticipant(Integer courseId, Integer userId) {
+        return this.remove(new QueryWrapper<CourseParticipants>().eq("course_id", courseId).eq("user_id", userId));
+    }
+
+    @Override
+    public boolean hasCourseParticipant(Integer courseId, Integer userId) {
+        return this.lambdaQuery().eq(CourseParticipants::getCourseId, courseId).eq(CourseParticipants::getUserId, userId).count() > 0;
+    }
 }
