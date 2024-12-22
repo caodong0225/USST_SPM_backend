@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 
 /**
  * 问题列表
+ * @author jyzxc
+ * @since 2024-12-23
  * @TableName questions
  */
 @TableName(value ="questions")
@@ -63,6 +65,9 @@ public class Questions implements Serializable {
      */
     @TableField(value = "course_id")
     private Integer courseId;
+
+    private String explanation;
+    private String answers;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

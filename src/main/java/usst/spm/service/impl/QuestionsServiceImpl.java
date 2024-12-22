@@ -6,6 +6,8 @@ import usst.spm.entity.Questions;
 import usst.spm.mapper.QuestionsMapper;
 import usst.spm.service.IQuestionsService;
 
+import java.util.List;
+
 /**
 * @author jyzxc
 * @description 针对表【questions(问题列表)】的数据库操作Service实现
@@ -23,6 +25,11 @@ public class QuestionsServiceImpl extends ServiceImpl<QuestionsMapper, Questions
     @Override
     public boolean deleteQuestionById(Integer questionId) {
         return this.baseMapper.deleteById(questionId) > 0;
+    }
+
+    @Override
+    public List<Questions> getQuestionsByCourseId(Integer courseId) {
+        return this.lambdaQuery().eq(Questions::getCourseId, courseId).list();
     }
 }
 

@@ -8,7 +8,10 @@ import usst.spm.dto.CreateQuestionDTO;
 import usst.spm.dto.UpdateQuestionDTO;
 import usst.spm.entity.Questions;
 import usst.spm.result.BaseResponse;
+import usst.spm.result.GeneralDataResponse;
 import usst.spm.service.IQuestionsService;
+
+import java.util.List;
 
 /**
  * @author jyzxc
@@ -29,6 +32,8 @@ public class QuestionsController {
         questions.setQuestionLevel(createQuestionDTO.getQuestionLevel());
         questions.setQuestionOptions(createQuestionDTO.getOptions());
         questions.setCourseId(createQuestionDTO.getCourseId());
+        questions.setExplanation(createQuestionDTO.getExplanation());
+        questions.setAnswers(createQuestionDTO.getAnswers());
         if(!questionsService.insertQuestion(questions)){
             return BaseResponse.makeResponse(400, "创建失败");
         }
@@ -52,9 +57,16 @@ public class QuestionsController {
         questions.setQuestionType(updateQuestionDTO.getQuestionType());
         questions.setQuestionLevel(updateQuestionDTO.getQuestionLevel());
         questions.setQuestionOptions(updateQuestionDTO.getOptions());
+        questions.setExplanation(updateQuestionDTO.getExplanation());
+        questions.setAnswers(updateQuestionDTO.getAnswers());
         if(!questionsService.updateById(questions)){
             return BaseResponse.makeResponse(400, "更新失败");
         }
         return BaseResponse.makeResponse(200, "更新成功");
+    }
+    @GetMapping("/preview/{courseId}/list")
+    @PreAuthorize("@CourseExpression.canEditCourse(#courseId)")
+    public GeneralDataResponse<List<Questions>> previewQuestions(@PathVariable Integer courseId) {
+        return new GeneralDataResponse<>(questionsService.getQuestionsByCourseId(courseId));
     }
 }

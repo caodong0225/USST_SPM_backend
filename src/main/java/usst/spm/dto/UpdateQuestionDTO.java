@@ -15,5 +15,6 @@ public class UpdateQuestionDTO {
     private String question;
     private String questionLevel;
     private String options;
-    private Integer courseId;
+    private String explanation;
+    private String answers;
 }

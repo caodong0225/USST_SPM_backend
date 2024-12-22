@@ -16,4 +16,6 @@ public class CreateQuestionDTO {
     private String question;
     private String questionLevel;
     private String options;
+    private String explanation;
+    private String answers;
 }
