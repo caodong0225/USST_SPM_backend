@@ -1,6 +1,5 @@
 package usst.spm.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -87,19 +86,8 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     }
 
     @Override
-    public <E extends IPage<Users>> E page(E page, Wrapper<Users> queryWrapper) {
-        E usersIPage = this.baseMapper.selectPage(page, queryWrapper);
-        usersIPage.getRecords().forEach(user -> user.setHash(null));
-        return usersIPage;
-    }
-
-    @Override
     @Cacheable(cacheNames = "app:users:user-info#600", key = "#userId", unless = "#result == null")
     public UserInfo getUserInfo(Serializable userId) {
-        // 检查userId是否存在于布隆锁当中
-        if(!redisService.checkBloomFilter("users:bloom", String.valueOf(userId))){
-            return null;
-        }
         Users user = this.getById(userId);
         if (user == null) {
             return null;
