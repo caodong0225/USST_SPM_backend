@@ -9,9 +9,12 @@ import usst.spm.entity.Papers;
 import usst.spm.entity.UserLogin;
 import usst.spm.result.BaseResponse;
 import usst.spm.result.GeneralDataResponse;
+import usst.spm.service.IPaperQuestionsService;
 import usst.spm.service.IPapersService;
+import usst.spm.vo.PapersVO;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,6 +27,8 @@ import java.util.List;
 public class PapersController {
     @Resource
     IPapersService papersService;
+    @Resource
+    IPaperQuestionsService paperQuestionsService;
 
     @PostMapping("/create")
     public BaseResponse createPaper(@RequestBody CreatePaperDTO createPaperDTO) {
@@ -59,13 +64,21 @@ public class PapersController {
     }
 
     @GetMapping("/{id}/list")
-    public GeneralDataResponse<List<Papers>> listPaper(@PathVariable("id") Integer id) {
+    public GeneralDataResponse<List<PapersVO>> listPaper(@PathVariable("id") Integer id) {
         UserLogin user = (UserLogin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // do something
         List<Papers> papers = papersService.getPapersById(id);
         if(!user.isAdmin()){
             papers.removeIf(paper -> !paper.getVisible());
         }
-        return new GeneralDataResponse<>(200, "获取成功", papers);
+        List<PapersVO> papersVOList = new ArrayList<>();
+        for (Papers paper : papers) {
+            PapersVO papersVO = new PapersVO();
+            papersVO.setPapers(paper);
+            papersVO.setPaperQuestions(paperQuestionsService.getPaperQuestionsByPaperId(paper.getId()));
+            papersVO.setQuestionsNum(papersVO.getPaperQuestions().size());
+            papersVOList.add(papersVO);
+        }
+        return new GeneralDataResponse<>(200, "获取成功", papersVOList);
     }
 }
