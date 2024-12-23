@@ -15,6 +15,5 @@ import java.util.List;
 @Setter
 public class PapersVO {
     Papers papers;
-    List<PaperQuestions> paperQuestions;
-    Integer questionsNum;
+    Long questionsNum;
 }

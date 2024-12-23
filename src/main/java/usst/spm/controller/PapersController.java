@@ -1,7 +1,9 @@
 package usst.spm.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import usst.spm.dto.CreatePaperDTO;
@@ -31,6 +33,8 @@ public class PapersController {
     IPaperQuestionsService paperQuestionsService;
 
     @PostMapping("/create")
+    @Operation(summary = "创建试卷", description = "创建试卷")
+    @PreAuthorize("@AuthExpression.isTeacher()")
     public BaseResponse createPaper(@RequestBody CreatePaperDTO createPaperDTO) {
         // do something
         if (createPaperDTO.getStartTime() == null || createPaperDTO.getEndTime() == null) {
@@ -55,6 +59,8 @@ public class PapersController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @Operation(summary = "删除试卷", description = "删除试卷")
+    @PreAuthorize("@PaperExpression.canEditPaper(#id)")
     public BaseResponse deletePaper(@PathVariable("id") Long id) {
         // do something
         if (!papersService.removeById(id)) {
@@ -64,6 +70,8 @@ public class PapersController {
     }
 
     @GetMapping("/{id}/list")
+    @Operation(summary = "获取试卷列表", description = "获取试卷列表")
+    @PreAuthorize("@CourseExpression.canAccessCourse(#id)")
     public GeneralDataResponse<List<PapersVO>> listPaper(@PathVariable("id") Integer id) {
         UserLogin user = (UserLogin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // do something
@@ -75,8 +83,7 @@ public class PapersController {
         for (Papers paper : papers) {
             PapersVO papersVO = new PapersVO();
             papersVO.setPapers(paper);
-            papersVO.setPaperQuestions(paperQuestionsService.getPaperQuestionsByPaperId(paper.getId()));
-            papersVO.setQuestionsNum(papersVO.getPaperQuestions().size());
+            papersVO.setQuestionsNum(paperQuestionsService.getQuestionsNumByPaperId(paper.getId()));
             papersVOList.add(papersVO);
         }
         return new GeneralDataResponse<>(200, "获取成功", papersVOList);

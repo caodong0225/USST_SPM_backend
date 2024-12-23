@@ -19,4 +19,26 @@ public class PaperQuestionsServiceImpl extends ServiceImpl<PaperQuestionsMapper,
     public List<PaperQuestions> getPaperQuestionsByPaperId(Integer paperId) {
         return this.lambdaQuery().eq(PaperQuestions::getPaperId, paperId).list();
     }
+
+    @Override
+    public Long getQuestionsNumByPaperId(Integer paperId) {
+        return this.lambdaQuery().eq(PaperQuestions::getPaperId, paperId).count();
+    }
+
+    @Override
+    public boolean addPaperQuestion(Integer paperId, Integer questionId) {
+        PaperQuestions paperQuestions = new PaperQuestions();
+        paperQuestions.setPaperId(paperId);
+        paperQuestions.setQuestionId(questionId);
+        return this.save(paperQuestions);
+    }
+
+    @Override
+    public boolean deletePaperQuestion(Integer paperId, Integer questionId) {
+        PaperQuestions paperQuestions = this.lambdaQuery().eq(PaperQuestions::getPaperId, paperId).eq(PaperQuestions::getQuestionId, questionId).one();
+        if (paperQuestions == null) {
+            return false;
+        }
+        return this.removeById(paperQuestions.getId());
+    }
 }

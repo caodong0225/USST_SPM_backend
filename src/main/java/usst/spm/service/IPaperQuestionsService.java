@@ -11,4 +11,7 @@ import java.util.List;
  */
 public interface IPaperQuestionsService extends IService<PaperQuestions> {
     List<PaperQuestions> getPaperQuestionsByPaperId(Integer paperId);
+    Long getQuestionsNumByPaperId(Integer paperId);
+    boolean addPaperQuestion(Integer paperId, Integer questionId);
+    boolean deletePaperQuestion(Integer paperId, Integer questionId);
 }

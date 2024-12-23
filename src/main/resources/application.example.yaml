@@ -29,6 +29,7 @@ security:
     authenticated:
       - /user/**  # 需要登录的路径
       - /course/**
+      - /paper/**
 # 在生产环境中，需要禁用swagger
 rocketmq:
   name-server: 127.0.0.1:9876
