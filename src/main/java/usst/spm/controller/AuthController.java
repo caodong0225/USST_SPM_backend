@@ -161,7 +161,7 @@ public class AuthController {
         user.setHash(registerRequestDTO.getPassword());
         user.setEmail(registerRequestDTO.getEmail());
         user.setUsername(registerRequestDTO.getUsername());
-        user.setNickname(registerRequestDTO.getUsername());
+        user.setNickname(registerRequestDTO.getNickname());
         user = usersService.createUser(user);
         return new GeneralDataResponse<>(user);
     }
