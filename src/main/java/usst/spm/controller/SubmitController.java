@@ -12,9 +12,7 @@ import usst.spm.dto.CreateSubmitDTO;
 import usst.spm.entity.*;
 import usst.spm.result.BaseResponse;
 import usst.spm.result.GeneralDataResponse;
-import usst.spm.service.IPaperQuestionsService;
-import usst.spm.service.IQuestionsService;
-import usst.spm.service.ISubmitService;
+import usst.spm.service.*;
 import usst.spm.vo.PaperSubmitResultVO;
 
 import java.util.List;
@@ -33,6 +31,10 @@ public class SubmitController {
     IPaperQuestionsService paperQuestionsService;
     @Resource
     ISubmitService submitService;
+    @Resource
+    INotificationsService notificationsService;
+    @Resource
+    IPapersService papersService;
     @PostMapping("/{paperId}")
     @PreAuthorize("@PaperExpression.canAccessPaper(#paperId)")
     @Operation(summary = "提交试卷答案")
@@ -40,6 +42,10 @@ public class SubmitController {
                                     @RequestBody List<CreateSubmitDTO> createSubmitDTOList) {
         UserLogin user = (UserLogin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<PaperQuestions> paperQuestions = paperQuestionsService.getPaperQuestionsByPaperId(paperId);
+        Papers papers = papersService.getById(paperId);
+        if(papers == null) {
+            return new BaseResponse(500, "试卷不存在");
+        }
         PaperSubmitResultVO paperSubmitResultVO = new PaperSubmitResultVO();
         paperSubmitResultVO.setWrongNum(0);
         paperSubmitResultVO.setCorrectNum(0);
@@ -77,6 +83,9 @@ public class SubmitController {
         if(!submitService.save(submit)){
             return new BaseResponse(500, "提交失败");
         }
+        notificationsService.sendNotification((Integer) user.getUserId(),
+                "测试成绩更新",
+                "您在试卷 " + papers.getPaperName() + " 中答对了 " + paperSubmitResultVO.getCorrectNum() + " 道题目，答错了 " + paperSubmitResultVO.getWrongNum() + " 道题目");
         return new BaseResponse(200, "提交成功");
     }
     @GetMapping("/{paperId}/list")

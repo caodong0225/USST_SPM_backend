@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
 import jakarta.validation.constraints.Min;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import usst.spm.result.BaseResponse;
 import usst.spm.result.GeneralDataResponse;
 import usst.spm.service.IAnnouncementsService;
 import usst.spm.service.ICoursesService;
+import usst.spm.service.INotificationsService;
 import usst.spm.service.IUsersService;
 import usst.spm.vo.AnnouncementsVO;
 
@@ -40,18 +42,14 @@ import java.util.List;
 @RequestMapping("/course")
 @Tag(name = "公告管理接口", description = "公告相关接口")
 public class AnnouncementsController {
-    private final IAnnouncementsService announcementsService;
-    private final IUsersService usersService;
-    private final ICoursesService coursesService;
-
-    @Autowired
-    public AnnouncementsController(
-            IAnnouncementsService announcementsService, IUsersService usersService, ICoursesService coursesService
-    ) {
-        this.announcementsService = announcementsService;
-        this.usersService = usersService;
-        this.coursesService = coursesService;
-    }
+    @Resource
+    IAnnouncementsService announcementsService;
+    @Resource
+    IUsersService usersService;
+    @Resource
+    ICoursesService coursesService;
+    @Resource
+    INotificationsService notificationsService;
 
     @GetMapping("/{id}/announcement")
     @Operation(summary = "获取课程公告", description = "获取课程公告")
@@ -112,6 +110,7 @@ public class AnnouncementsController {
         announcement.setCreatorId((Integer) users.getUserId());
         announcement.setTitle(createAnnouncementDTO.getTitle());
         announcement.setContent(createAnnouncementDTO.getContent());
+        notificationsService.sendNotification((Integer) users.getUserId(), createAnnouncementDTO.getTitle(), createAnnouncementDTO.getContent());
         if (!announcementsService.save(announcement)) {
             return BaseResponse.makeResponse(400, "添加失败");
         }
