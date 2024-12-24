@@ -11,7 +11,7 @@
  Target Server Version : 80038 (8.0.38)
  File Encoding         : 65001
 
- Date: 23/12/2024 13:13:28
+ Date: 24/12/2024 22:40:47
 */
 
 SET NAMES utf8mb4;
@@ -145,6 +145,24 @@ CREATE TABLE `questions`  (
                               INDEX `questions_courses_id_fk`(`course_id` ASC) USING BTREE,
                               CONSTRAINT `questions_courses_id_fk` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '问题列表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for submit
+-- ----------------------------
+DROP TABLE IF EXISTS `submit`;
+CREATE TABLE `submit`  (
+                           `id` int NOT NULL AUTO_INCREMENT COMMENT '主键',
+                           `user_id` int NOT NULL COMMENT '提交的用户id',
+                           `paper_id` int NOT NULL COMMENT '试卷id',
+                           `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '提交内容',
+                           `result` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '提交返回结果',
+                           `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                           PRIMARY KEY (`id`) USING BTREE,
+                           INDEX `submit_papers_id_fk`(`paper_id` ASC) USING BTREE,
+                           INDEX `submit_users_id_fk`(`user_id` ASC) USING BTREE,
+                           CONSTRAINT `submit_papers_id_fk` FOREIGN KEY (`paper_id`) REFERENCES `papers` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+                           CONSTRAINT `submit_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '提交记录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for user_exts
