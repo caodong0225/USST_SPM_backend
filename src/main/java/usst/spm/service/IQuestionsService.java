@@ -14,4 +14,5 @@ public interface IQuestionsService extends IService<Questions> {
     boolean insertQuestion(Questions questions);
     boolean deleteQuestionById(Integer questionId);
     List<Questions> getQuestionsByCourseId(Integer courseId);
+    List<Questions> getQuestionsByPaperId(Integer paperId);
 }

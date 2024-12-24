@@ -1,5 +1,6 @@
 package usst.spm.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +26,7 @@ public class QuestionsController {
     private IQuestionsService questionsService;
     @PostMapping("/create")
     @PreAuthorize("@CourseExpression.canAccessCourse(#createQuestionDTO.courseId)")
+    @Operation(summary = "创建问题", description = "创建问题")
     public BaseResponse createQuestion(@RequestBody CreateQuestionDTO createQuestionDTO) {
         Questions questions = new Questions();
         questions.setQuestionType(createQuestionDTO.getQuestionType());
@@ -42,6 +44,7 @@ public class QuestionsController {
 
     @DeleteMapping("/delete/{questionId}")
     @PreAuthorize("@QuestionsExpression.canEditQuestions(#questionId)")
+    @Operation(summary = "删除问题", description = "删除问题")
     public BaseResponse deleteQuestion(@PathVariable Integer questionId) {
         if(!questionsService.deleteQuestionById(questionId)){
             return BaseResponse.makeResponse(400, "删除失败");
@@ -51,6 +54,7 @@ public class QuestionsController {
 
     @PutMapping("/update")
     @PreAuthorize("@QuestionsExpression.canEditQuestions(#updateQuestionDTO.id)")
+    @Operation(summary = "更新问题", description = "更新问题")
     public BaseResponse updateQuestion(@RequestBody UpdateQuestionDTO updateQuestionDTO) {
         Questions questions = questionsService.getById(updateQuestionDTO.getId());
         questions.setQuestionName(updateQuestionDTO.getQuestion());
@@ -66,7 +70,14 @@ public class QuestionsController {
     }
     @GetMapping("/preview/{courseId}/list")
     @PreAuthorize("@CourseExpression.canEditCourse(#courseId)")
+    @Operation(summary = "预览问题", description = "预览问题")
     public GeneralDataResponse<List<Questions>> previewQuestions(@PathVariable Integer courseId) {
         return new GeneralDataResponse<>(questionsService.getQuestionsByCourseId(courseId));
+    }
+    @GetMapping("/preview/paper/{paperId}")
+    @PreAuthorize("@PaperExpression.canAccessPaper(#paperId)")
+    @Operation(summary = "预览试卷问题", description = "预览试卷问题")
+    public GeneralDataResponse<List<Questions>> previewQuestionsByPaperId(@PathVariable Integer paperId) {
+        return new GeneralDataResponse<>(questionsService.getQuestionsByPaperId(paperId));
     }
 }
