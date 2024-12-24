@@ -101,12 +101,6 @@
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
             <version>3.5.6</version>
         </dependency>
-        <!--引入rocketmq-->
-        <dependency>
-            <groupId>org.apache.rocketmq</groupId>
-            <artifactId>rocketmq-spring-boot-starter</artifactId>
-            <version>2.2.0</version>
-        </dependency>
         <!--引入spring quartz-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
