@@ -31,6 +31,7 @@ security:
       - /course/**
       - /paper/**
       - /question/**
+      - /submit/**
 # 在生产环境中，需要禁用swagger
 springdoc:
   api-docs:
