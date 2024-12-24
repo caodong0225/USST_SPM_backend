@@ -19,12 +19,6 @@ docker run -p 6379:6379 --name myredis -d redis
 docker run -p 3306:3306 -d --name mysql8 -e MYSQL_ROOT_PASSWORD=123456 mysql:8
 ```
 
-输入以下命令开启`rocketmq`
-
-```bash
-docker run -d --name rmqnamesrv -p 9876:9876 apache/rocketmq:latest sh mqnamesrv
-```
-
 输入以下命令开启`minio`
 
 ```bash
@@ -71,15 +65,9 @@ security:
     authenticated:
       - /user/**  # 需要登录的路径
       - /course/**
+      - /paper/**
+      - /question/**
 # 在生产环境中，需要禁用swagger
-rocketmq:
-  name-server: 127.0.0.1:9876
-  producer:
-    group: producer-group # 生产者组
-    send-message-timeout: 3000 # 发送超时时间
-  consumer:
-    group: consumer-group # 消费者组
-    topic: test-topic # 消息主题
 springdoc:
   api-docs:
     enabled: true
